@@ -9,16 +9,17 @@ var model = {
 var api = {
 
   root: "https://api.themoviedb.org/3",
-  token: "TODO", // TODO 0 add your api key
+  token: "b132b118860244ab27e5ad6a0033323a", // TODO 0 add your api key
 
   /**
    * Given a movie object, returns the url to its poster image
    */
   posterUrl: function(movie) {
     // TODO 4b
-    // implement this function
+   var baseimgurl="http://image.tmdb.org/t/p/w300//";
+   
 
-    return "http://images5.fanpop.com/image/photos/25100000/movie-poster-rapunzel-and-eugene-25184488-300-450.jpg" 
+    return baseimgurl+movie.poster_path;
   }
 }
 
@@ -81,19 +82,25 @@ function render() {
     // TODO 1 
     // add an "I watched it" button and append it below the title
     // Clicking should remove this movie from the watchlist and re-render
-
+    var button = $("<button></button>")
+      .text("I watched it!")
+      .click(function() {
+        model.watchlistItems.pop(movie);
+        render();
     // TODO 2i
     // apply the classes "btn btn-danger" to the "I watched it button"
-
+    button.addClass("btn btn-danger btnwatched");
     // TODO 4a
     // add a poster image and append it inside the 
     // panel body above the button
-
+    var image = $("<img></img>").attr("src", api.posterUrl(movie)).addClass("img-responsive");
     // TODO 2g
     // re-implement the li as a bootstrap panel with a heading and a body
+    var panelBody = $("<div></div>").attr("class", "panel-body").append(image).append(button);
     var itemView = $("<li></li>")
       .append(title)
-      .attr("class", "item-watchlist");
+      .append(panelBody)
+      .attr("class", "panel panel-default item-watchlist");
 
     $("#section-watchlist ul").append(itemView);
   });
@@ -116,7 +123,7 @@ function render() {
         render();
       })
       .prop("disabled", model.watchlistItems.indexOf(movie) !== -1);
-
+    button.addClass("btn btn-primary");
     var overview = $("<p></p>").text(movie.overview);
 
     // append everything to itemView, along with an <hr/>
@@ -124,16 +131,15 @@ function render() {
       .append(title)
       .append(overview)
       .append(button);
-      
+    itemView.addClass("list-group-item");
     // append the itemView to the list
     $("#section-browse ul").append(itemView);
   });
   
 }
-
-
 // When the HTML document is ready, we call the discoverMovies function,
 // and pass the render function as its callback
 $(document).ready(function() {
   discoverMovies(render);
 });
+
