@@ -2,8 +2,8 @@
 
 var model = {
   watchlistItems: [],
-  browseItems: []
-
+  browseItems: [],
+  activeMovieIndex: 0
   // TODO 
   // add a property for the current active movie index
 }
@@ -11,7 +11,7 @@ var model = {
 
 var api = {
   root: "https://api.themoviedb.org/3",
-  token: "8e888fa39ec243e662e1fb738c42ae99", // TODO 0 add your api key
+  token: "b132b118860244ab27e5ad6a0033323a", // TODO 0 add your api key
   /**
    * Given a movie object, returns the url to its poster image
    */
@@ -84,8 +84,9 @@ function render() {
   // clear everything
   $("#section-watchlist ul").empty();
   $("#section-browse ul").empty();
+  $("#browse-info").empty();
 
-  // render watchlist items
+  //render watchlist items
   model.watchlistItems.forEach(function(movie) {
     var title = $("<h6></h6>").text(movie.original_title);
       
@@ -123,27 +124,38 @@ function render() {
   });
 
   // render browse items
-  model.browseItems.forEach(function(movie) {
-    var title = $("<h4></h4>").text(movie.original_title);
-    var overview = $("<p></p>").text(movie.overview);
+  var activeMovie =  model.browseItems[model.activeMovieIndex] // TODO fill this in
+  console.log(activeMovie);
+  var title = $("<h4></h4>").text(activeMovie.original_title);
+  var overview = $("<p></p>").text(activeMovie.overview);
 
     // button for adding to watchlist
-    var button = $("<button></button>")
+    var button = $("#add-to-watchlist")
       .text("Add to Watchlist")
       .attr("class", "btn btn-primary")
       .click(function() {
-        model.watchlistItems.push(movie);
+        model.watchlistItems.push(activeMovie);
         render();
       })
-      .prop("disabled", model.watchlistItems.indexOf(movie) !== -1);
+      .prop("disabled", model.watchlistItems.indexOf(activeMovie) !== -1);
 
-    var itemView = $("<li></li>")
-      .attr("class", "list-group-item")
-      .append( [title, overview, button] );
-      
-    // append the itemView to the list
-    $("#section-browse ul").append(itemView);
-  });
+
+     // append the itemView to the list
+     $("#browse-info").append([title, overview]);
+     // fill carousel with posters
+      var posters = model.browseItems.map(function(movie) {
+      var posterImg = $("<img></img>")
+      .attr("src", api.posterUrl(movie))
+      .attr("class", "img-responsive");// TODO 
+      // return a list item with an img inside
+      return $("<li></li>")
+      .attr("class", "item")
+      .append(posterImg);
+     });
+
+$("#section-browse .carousel-inner").append(posters);
+posters[model.activeMovieIndex].addClass("active");
+  
 }
 
 
